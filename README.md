@@ -110,3 +110,10 @@ def get_time_range(self):
 def get_duration(self):
     return (self.end_time - self.start_time).total_seconds()
 ```
+## Graph
+```
+def __init__(self):
+    self.nodes = []
+```
+
+1. `add_node`: 
