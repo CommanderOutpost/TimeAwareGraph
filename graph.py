@@ -65,13 +65,14 @@ def add_node(self, value):
             time += timedelta(minutes=1)  # Adjust the time step as needed
 
         return dict(evolution)
+def remove_node(self, node: Node):
+    if node in self.nodes:
+        self.nodes.discard(node)
+        for edge in node.get_edges():
+            if (edge.direction == 'to' and edge.from_node == node) or (edge.direction == 'from' and edge.to_node == node) or edge.direction is None:
+                edge.from_node.remove_edge(edge)
+                edge.to_node.remove_edge(edge)
 
-    def remove_node(self, node: Node):
-        if node in self.nodes:
-            self.nodes.remove(node)
-            for edge in node.get_edges():
-                if (edge.direction == 'to' and edge.from_node == node) or (edge.direction == 'from' and edge.to_node == node) or edge.direction is None:
-                    edge.from_node.remove_edge(edge)
                     edge.to_node.remove_edge(edge)
 
     def get_edge_history(self, node1: Node, node2: Node) -> List[Tuple[datetime, datetime]]:
