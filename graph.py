@@ -8,10 +8,11 @@ class Graph:
 def __init__(self):
     self.nodes = set()
 
-    def add_node(self, value):
-        node = Node(value)
-        self.nodes.append(node)
-        return node
+def add_node(self, value):
+    node = Node(value)
+    self.nodes.add(node)
+    return node
+
 
     def add_edge(self, from_node, to_node, start_time, end_time, weight, direction=None):
         from_node.add_edge(to_node, weight, start_time, end_time, direction)
