@@ -5,50 +5,45 @@ from node import Node
 from edge import Edge
 
 class Graph:
-    def __init__(self):
-        self.nodes = []
+def __init__(self):
+    self.nodes = set()
 
-    def add_node(self, value):
-        node = Node(value)
-        self.nodes.append(node)
-        return node
+def add_node(self, value):
+    node = Node(value)
+    self.nodes.add(node)
+    return node
+
 
     def add_edge(self, from_node, to_node, start_time, end_time, weight, direction=None):
         from_node.add_edge(to_node, weight, start_time, end_time, direction)
 
     def get_nodes(self):
         return self.nodes
-
-    def shortest_path(self, start_node: Node, end_node: Node, start_time: datetime, end_time: datetime) -> List[Node]:
-        distances = {node: (float('infinity'), None) for node in self.nodes}  # Node -> (distance, previous node, current time)
-        distances[start_node] = (0, None, start_time)
-
-        unvisited_nodes = self.nodes.copy()
-
-        while unvisited_nodes:
-            current_node = min(unvisited_nodes, key=lambda node: distances[node][0])  # Node with the smallest distance
-            unvisited_nodes.remove(current_node)
-
-            if current_node == end_node:
-                break
-
-            current_distance, _, current_time = distances[current_node]
-
-            for edge in current_node.get_edges_at_time(current_time):
-                if edge.end_time > end_time:
-                    continue  # Ignore edges outside the time window
-
-                alternative_distance = current_distance + edge.get_duration()
-
-                if alternative_distance < distances[edge.to_node][0]:
-                    distances[edge.to_node] = (alternative_distance, current_node, edge.end_time)
-
-        path = []
-        current_node = end_node
-        while current_node is not None:
-            path.append(current_node)
-            _, current_node = distances[current_node]
-        path.reverse()
+def shortest_path(self, start_node: Node, end_node: Node, start_time: datetime, end_time: datetime) -> List[Node]:
+    import heapq
+    distances = {node: (float('infinity'), None) for node in self.nodes}
+    distances[start_node] = (0, None, start_time)
+    priority_queue = [(0, start_node)]
+    while priority_queue:
+        current_distance, current_node = heapq.heappop(priority_queue)
+        if current_node == end_node:
+            break
+        for edge in current_node.get_edges_at_time(start_time):
+            if edge.end_time > end_time or edge.start_time < start_time:
+                continue
+            next_node = edge.to_node
+            weight = edge.weight
+            new_distance = current_distance + weight
+            if new_distance < distances[next_node][0]:
+                distances[next_node] = (new_distance, current_node, edge.end_time)
+                heapq.heappush(priority_queue, (new_distance, next_node))
+    path = []
+    node = end_node
+    while node:
+        path.append(node)
+        node = distances[node][1]
+    path.reverse()
+    return path if distances[end_node][0] != float('infinity') else None
 
         return path if distances[end_node][0] != float('infinity') else None
         
@@ -64,13 +59,14 @@ class Graph:
             time += timedelta(minutes=1)  # Adjust the time step as needed
 
         return dict(evolution)
+def remove_node(self, node: Node):
+    if node in self.nodes:
+        self.nodes.discard(node)
+        for edge in node.get_edges():
+            if (edge.direction == 'to' and edge.from_node == node) or (edge.direction == 'from' and edge.to_node == node) or edge.direction is None:
+                edge.from_node.remove_edge(edge)
+                edge.to_node.remove_edge(edge)
 
-    def remove_node(self, node: Node):
-        if node in self.nodes:
-            self.nodes.remove(node)
-            for edge in node.get_edges():
-                if (edge.direction == 'to' and edge.from_node == node) or (edge.direction == 'from' and edge.to_node == node) or edge.direction is None:
-                    edge.from_node.remove_edge(edge)
                     edge.to_node.remove_edge(edge)
 
     def get_edge_history(self, node1: Node, node2: Node) -> List[Tuple[datetime, datetime]]:
