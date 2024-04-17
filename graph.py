@@ -5,8 +5,8 @@ from node import Node
 from edge import Edge
 
 class Graph:
-    def __init__(self):
-        self.nodes = []
+def __init__(self):
+    self.nodes = set()
 
     def add_node(self, value):
         node = Node(value)
