@@ -7,9 +7,9 @@ class Node:
         self.value = value
         self.edges = []
 
-    def add_edge(self, node, weight, start_time, end_time, direction=None):
-        self.edges.append(Edge(self, node, weight, start_time, end_time, direction))
-
+def add_edge(self, node, weight, start_time, end_time, direction=None):
+    edge = Edge(self, node, weight, start_time, end_time, direction)
+    self.edges.append(edge)
     def get_edges(self):
         return self.edges
 
